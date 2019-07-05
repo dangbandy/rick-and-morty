@@ -1,4 +1,9 @@
 .app-content{
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    position: absolute;
     display: block;
     background-color: black;
     height: 100%;
@@ -51,6 +56,7 @@ footer p{
 }
 
 .home-content{
+    top: ;
     display: block;
     margin: auto;
     background-color: black;
@@ -72,6 +78,9 @@ footer p{
 }
 
 .characters-content{
+    background: #659999;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #f4791f, #659999);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #f4791f, #659999); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
     display: block;
     margin: auto;
     text-align: center;
@@ -87,21 +96,39 @@ footer p{
     justify-content: center;
 }
 
-.char-row::after {
-    content: "";
-    flex: auto;
-    margin-left: auto;
-}
-
 .char-card{
+    background-color: #fefefe;
     border-radius: 7px;
     margin: 10px 10px 10px 10px;
     padding: auto;
     width: 300px;
+    max-width: 300px;
     overflow: auto;
 }
 
 .char-card p{
     text-align: left;
     font-size: 20px;
+}
+
+.char-list-item{
+    text-align: left;
+}
+
+.char-loading{
+    justify-content: center;
+    text-align: center;
+    max-width: 100%;
+    background-color: black;
+    height: 100%;
+    width: 100%;
+}
+
+.spinner-border{
+    padding: 10% 10% 10% 10%;
+    margin: 10%;
+}
+
+.char-loading span{
+    margin: 50% auto 50% auto;
 }
