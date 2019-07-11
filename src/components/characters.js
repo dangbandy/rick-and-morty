@@ -9,7 +9,7 @@ import FormControl from "react-bootstrap/FormControl";
 import { fork } from 'child_process';
 
 class Characters extends Component {
-    allCharacters=[];
+    allCharacters = [];
     pages = [];
     displayChar = [];
     constructor(props) {
@@ -17,21 +17,26 @@ class Characters extends Component {
         this.state = {
             searchKey: "",
             error: null,
-            isLoaded: false,
             chars: []
         };
         this.changeSearch = this.changeSearch.bind(this);
+        this.getResult = this.getResult.bind(this);
+        this.checkName = this.checkName.bind(this);
     }
 
     componentDidMount() {
         this.pages = [];
-        for(let i=1; i<= 20;i++){
+        for(let i=1; i<= 20; i++){
             fetch("https://rickandmortyapi.com/api/character/?page="+i)
                 .then(res => res.json())
                 .then((result) => {
                         this.pages.push(i);
+                        this.allCharacters = this.allCharacters.concat(result.results);
+                        if(this.pages.length === 20){
+                            this.getResult();
+                        }
                         this.setState({
-                            isLoaded: true,
+                            searchKey: "",
                             chars: result.results
                         });
                     },
@@ -40,59 +45,70 @@ class Characters extends Component {
                     // exceptions from actual bugs in components.
                     (error) => {
                         this.setState({
-                            isLoaded: true,
+                            searchKey: "",
                             error
                         });
                     }
-                ).then(()=>{
-                    this.populate(this.state.chars);
-                })
+                )
         }
     }
 
-    populate(chars){
-        this.allCharacters.push(
-            chars.map(char => (
+    checkName(params) {
+        if(this.state.searchKey !== null){
+            return params.name.includes(this.state.searchKey);
+        }
+        else{
+            alert("is null");
+        }
+        return false;
+    }
+
+    getResult(){
+        //alert("all char length " + this.allCharacters.length);
+        //alert(this.state.searchKey);
+        this.displayChar = [];
+        if(this.state.searchKey === "" || this.state.searchKey === null){
+            this.displayChar.push(
+                this.allCharacters.map(char => (
                     <span>
                     <Card className="char-card">
                         <Card.Header>{char.name}</Card.Header>
                         <Card.Img variant="top" src={char.image}/>
                         <Card.Body>
                                 <ListGroup>
-                                  <ListGroup.Item className="char-list-item">
-                                      Status: {char.status}
-                                  </ListGroup.Item>
-                                  <ListGroup.Item className="char-list-item">
-                                      Species: {char.species}
-                                  </ListGroup.Item>
-                                  <ListGroup.Item className="char-list-item">
-                                      Type: {char.type}
-                                  </ListGroup.Item>
-                                  <ListGroup.Item className="char-list-item">
-                                      Gender: {char.gender}
-                                  </ListGroup.Item>
-                                  <ListGroup.Item className="char-list-item">
-                                      Origin: {char.origin.name}
-                                  </ListGroup.Item>
-                                  <ListGroup.Item className="char-list-item">
-                                      Location: {char.location.name}
-                                  </ListGroup.Item>
+                                <ListGroup.Item className="char-list-item">
+                                    Status: {char.status}
+                                </ListGroup.Item>
+                                <ListGroup.Item className="char-list-item">
+                                    Species: {char.species}
+                                </ListGroup.Item>
+                                <ListGroup.Item className="char-list-item">
+                                    Type: {char.type}
+                                </ListGroup.Item>
+                                <ListGroup.Item className="char-list-item">
+                                    Gender: {char.gender}
+                                </ListGroup.Item>
+                                <ListGroup.Item className="char-list-item">
+                                    Origin: {char.origin.name}
+                                </ListGroup.Item>
+                                <ListGroup.Item className="char-list-item">
+                                    Location: {char.location.name}
+                                </ListGroup.Item>
                                 </ListGroup>
                         </Card.Body>
                     </Card>
                     </span>
                 ))
-        );
-    }
-
-    getResult(){
-        if(this.state.searchKey === ""){
-            this.displayChar = this.allCharacters;
+            );
         }
         else{
-            let temp = this.allCharacters.filter( char => char.name.includes(this.state.searchKey));
-            let result = [];
-            result.push(
+            //alert("search term " + this.state.searchKey);
+            let temp = this.allCharacters.filter(e => {
+                let k = e.name.toLowerCase();
+                return k.includes(this.state.searchKey);
+            });
+            
+            this.displayChar.push(
                 temp.map(char => (
                     <span>
                     <Card className="char-card">
@@ -124,31 +140,26 @@ class Characters extends Component {
                     </span>
                 ))
             );
-            return result;
         }
+        //alert("Called size is " + this.displayChar.length);
     }
 
-changeSearch(event){
-    this.setState({searchKey: event.target.value})
-}
+    nothing(event){
+        //alert("called");
+    }
 
-    render()/* {
-        return (
-            <section className="characters-content">
-                <Container className="char-container">
-                    <Row className="char-row">
-                        {this.populate()}
-                    </Row>
+    changeSearch(event){
+        let k = event.target.value.toLowerCase();
+        this.setState({searchKey: k})
+        //alert(event.target.value);
+        this.getResult();
+    }
 
-                </Container>
-            </section>
-
-        )
-    }*/
+    render()
     {
         const { error, searchKey } = this.state;
         if (error) {
-            alert("error");
+            //alert("error");
             return <div>Error: {error.message}</div>;
         } else if ( this.pages.length < 20 ) {
             return (
@@ -164,11 +175,11 @@ changeSearch(event){
                     <Container className="char-container">
                         <Row>
                             <form className="search-bar" id="searchBar">
-                                <input type="text" hint="Search" value={this.state.searchKey} placeholder="Search" onChange={this.changeSearch}/>
+                                <input type="text" hint="Search" placeholder="Search" onKeyDown={this.changeSearch} onChange={this.changeSearch}/>
                             </form>
                         </Row>
                         <Row className="char-row">
-                            {this.allCharacters}
+                            {this.displayChar}
                         </Row>
                     </Container>
                 </section>
