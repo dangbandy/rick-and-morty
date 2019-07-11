@@ -131,3 +131,21 @@ footer p{
 .char-loading span{
     margin: 50% auto 50% auto;
 }
+
+.search-bar{
+    padding-top: 10px;
+    display: grid;
+    min-width: 60%;
+    width: 60%;
+    max-width: 100%;
+    overflow: auto;
+    margin: auto;
+}
+
+.search-bar input{
+    text-align: center;
+    min-height: 30px;
+    padding: 5px;
+    border-radius: 5px;
+    border: none;
+}
