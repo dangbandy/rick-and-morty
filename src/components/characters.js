@@ -11,6 +11,7 @@ import { fork } from 'child_process';
 class Characters extends Component {
     allCharacters=[];
     pages = [];
+    displayChar = [];
     constructor(props) {
         super(props);
         this.state = {
@@ -23,47 +24,33 @@ class Characters extends Component {
     }
 
     componentDidMount() {
-        if(this.state.searchKey === ""){ 
-            this.pages = [];
-            for(let i=1; i<= 20;i++){
-                fetch("https://rickandmortyapi.com/api/character/?page="+i)
-                    .then(res => res.json())
-                    .then((result) => {
-                            this.pages.push(i);
-                            this.setState({
-                                isLoaded: true,
-                                chars: result.results
-                            });
-                        },
-                        // Note: it's important to handle errors here
-                        // instead of a catch() block so that we don't swallow
-                        // exceptions from actual bugs in components.
-                        (error) => {
-                            this.setState({
-                                isLoaded: true,
-                                error
-                            });
-                        }
-                    ).then(()=>{
-                        this.populate(this.state.chars);
-                    })
-            }
+        this.pages = [];
+        for(let i=1; i<= 20;i++){
+            fetch("https://rickandmortyapi.com/api/character/?page="+i)
+                .then(res => res.json())
+                .then((result) => {
+                        this.pages.push(i);
+                        this.setState({
+                            isLoaded: true,
+                            chars: result.results
+                        });
+                    },
+                    // Note: it's important to handle errors here
+                    // instead of a catch() block so that we don't swallow
+                    // exceptions from actual bugs in components.
+                    (error) => {
+                        this.setState({
+                            isLoaded: true,
+                            error
+                        });
+                    }
+                ).then(()=>{
+                    this.populate(this.state.chars);
+                })
         }
-        else{
-            let temp = this.state.chars.filter( char => char.name.includes("rick"));
-            this.populate(temp);
-        }
-
-       
-
     }
 
-
-
     populate(chars){
-        if(this.state.searchKey !== ""){
-            this.allCharacters = [];
-        }
         this.allCharacters.push(
             chars.map(char => (
                     <span>
@@ -100,10 +87,10 @@ class Characters extends Component {
 
     getResult(){
         if(this.state.searchKey === ""){
-            return this.allCharacters;
+            this.displayChar = this.allCharacters;
         }
         else{
-            let temp = this.state.chars.filter( char => char.name.includes(this.state.searchKey));
+            let temp = this.allCharacters.filter( char => char.name.includes(this.state.searchKey));
             let result = [];
             result.push(
                 temp.map(char => (
